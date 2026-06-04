@@ -122,6 +122,11 @@ export function CalendarGrid({
                 const attendees = slot
                   ? [selfName, ...slot.availableUsers.map((e) => nameMap[e] ?? e)]
                   : [];
+                // 姓のみ（最初の2文字）を表示、titleで全名
+                const short = (name: string) => name.slice(0, 2);
+                const MAX_VISIBLE = 4;
+                const visibleAttendees = attendees.slice(0, MAX_VISIBLE);
+                const hiddenCount = attendees.length - MAX_VISIBLE;
 
                 return (
                   <div
@@ -138,6 +143,7 @@ export function CalendarGrid({
                       borderTop: isHourBoundary ? '1px solid #374151' : '1px solid #1f2937',
                       borderRightColor: '#374151',
                     }}
+                    title={isFree ? attendees.join('\n') : undefined}
                     onMouseDown={
                       isFree ? () => handleMouseDown(slotKey(slot!), isSelected) : undefined
                     }
@@ -146,13 +152,29 @@ export function CalendarGrid({
                     }
                   >
                     {isFree && (
-                      <div className="h-full px-1.5 overflow-hidden flex flex-col justify-center">
+                      <div className="h-full px-1 overflow-hidden flex flex-col justify-center gap-0.5">
                         {isSelected ? (
                           <p className="text-xs text-blue-100 font-medium truncate">✓ {time}</p>
                         ) : (
-                          <p className="text-xs text-emerald-300 truncate leading-snug">
-                            {attendees.join(' · ')}
-                          </p>
+                          <div className="flex flex-wrap gap-0.5">
+                            {visibleAttendees.map((name, i) => (
+                              <span
+                                key={i}
+                                className="inline-block text-emerald-200 bg-emerald-700/60 rounded px-0.5 leading-tight"
+                                style={{ fontSize: '10px' }}
+                              >
+                                {short(name)}
+                              </span>
+                            ))}
+                            {hiddenCount > 0 && (
+                              <span
+                                className="inline-block text-emerald-400 rounded px-0.5 leading-tight"
+                                style={{ fontSize: '10px' }}
+                              >
+                                +{hiddenCount}
+                              </span>
+                            )}
+                          </div>
                         )}
                       </div>
                     )}
