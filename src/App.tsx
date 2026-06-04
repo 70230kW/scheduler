@@ -10,11 +10,22 @@ import { fetchFreeBusy, computeFreeSlots } from './utils/freebusy';
 
 const CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID ?? '';
 
+const DEFAULT_USERS: UserEntry[] = [
+  { id: crypto.randomUUID(), email: 'm-niimura@funaisoken.co.jp',      name: '新村' },
+  { id: crypto.randomUUID(), email: 't-miyahara@funaisoken.co.jp',     name: '宮原' },
+  { id: crypto.randomUUID(), email: 'y-mori_ab@funaisoken.co.jp',      name: '森' },
+  { id: crypto.randomUUID(), email: 'kaito-shimomura@funaisoken.co.jp',name: '下村' },
+  { id: crypto.randomUUID(), email: 'kyota-suzuki@funaisoken.co.jp',   name: '鈴木' },
+  { id: crypto.randomUUID(), email: 'jin-watanabe@funaisoken.co.jp',   name: '渡邉' },
+  { id: crypto.randomUUID(), email: 'keita-waga@funaisoken.co.jp',     name: '和賀' },
+  { id: crypto.randomUUID(), email: 'takamasa-tsugakoshi@funaisoken.co.jp', name: '塚越' },
+];
+
 function AppInner() {
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [selfEmail, setSelfEmail] = useState('');
   const [selfName, setSelfName] = useState('');
-  const [users, setUsers] = useState<UserEntry[]>([]);
+  const [users, setUsers] = useState<UserEntry[]>(DEFAULT_USERS);
   const [startDate, setStartDate] = useState(format(new Date(), 'yyyy-MM-dd'));
   const [endDate, setEndDate] = useState(format(addDays(new Date(), 7), 'yyyy-MM-dd'));
   const [slots, setSlots] = useState<FreeSlot[]>([]);
