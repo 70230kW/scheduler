@@ -125,7 +125,11 @@ function AppInner() {
         </div>
 
         {searched && (
-          <ScheduleView slots={slots} selfEmail={selfEmail} loading={loading} />
+          <ScheduleView
+            slots={slots}
+            nameMap={Object.fromEntries(users.map((u) => [u.email, u.name]))}
+            loading={loading}
+          />
         )}
       </main>
     </div>

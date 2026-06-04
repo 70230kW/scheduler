@@ -1,7 +1,7 @@
 export interface UserEntry {
   id: string;
   email: string;
-  label?: string;
+  name: string;
 }
 
 export interface BusyPeriod {
