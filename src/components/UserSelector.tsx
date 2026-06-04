@@ -1,16 +1,29 @@
 import { useState } from 'react';
 import { UserEntry } from '../types';
+import { lookupContactName } from '../utils/contacts';
 
 interface UserSelectorProps {
   users: UserEntry[];
   onChange: (users: UserEntry[]) => void;
   selfEmail: string;
+  accessToken: string;
 }
 
-export function UserSelector({ users, onChange, selfEmail }: UserSelectorProps) {
+export function UserSelector({ users, onChange, selfEmail, accessToken }: UserSelectorProps) {
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
+  const [looking, setLooking] = useState(false);
   const [error, setError] = useState('');
+
+  async function handleEmailBlur() {
+    const trimmed = email.trim().toLowerCase();
+    if (!trimmed || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) return;
+    if (name) return;
+    setLooking(true);
+    const found = await lookupContactName(accessToken, trimmed);
+    if (found) setName(found);
+    setLooking(false);
+  }
 
   function addUser() {
     const trimmedEmail = email.trim().toLowerCase();
@@ -44,22 +57,30 @@ export function UserSelector({ users, onChange, selfEmail }: UserSelectorProps) 
       <label className="block text-sm font-medium text-gray-700 mb-2">
         チェックする相手
       </label>
-      <div className="flex gap-2 mb-3">
+      <div className="flex gap-2 mb-1">
+        <div className="flex-1 relative">
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => { setEmail(e.target.value); setError(''); }}
+            onBlur={handleEmailBlur}
+            onKeyDown={(e) => e.key === 'Enter' && addUser()}
+            placeholder="メールアドレス"
+            className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          />
+          {looking && (
+            <span className="absolute right-3 top-1/2 -translate-y-1/2">
+              <div className="w-4 h-4 border-2 border-blue-400 border-t-transparent rounded-full animate-spin" />
+            </span>
+          )}
+        </div>
         <input
           type="text"
           value={name}
           onChange={(e) => { setName(e.target.value); setError(''); }}
           onKeyDown={(e) => e.key === 'Enter' && addUser()}
-          placeholder="名前（例: 田中様）"
-          className="w-36 px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-        />
-        <input
-          type="email"
-          value={email}
-          onChange={(e) => { setEmail(e.target.value); setError(''); }}
-          onKeyDown={(e) => e.key === 'Enter' && addUser()}
-          placeholder="メールアドレス"
-          className="flex-1 px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          placeholder={looking ? '検索中...' : '名前'}
+          className="w-32 px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
         />
         <button
           onClick={addUser}
@@ -68,9 +89,10 @@ export function UserSelector({ users, onChange, selfEmail }: UserSelectorProps) 
           追加
         </button>
       </div>
+      <p className="text-xs text-gray-400 mb-2">メアド入力後、Googleコンタクトに登録済みの場合は名前が自動補完されます</p>
       {error && <p className="text-red-500 text-xs mb-2">{error}</p>}
       {users.length > 0 && (
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2 mt-2">
           {users.map((user) => (
             <span
               key={user.id}

@@ -31,7 +31,11 @@ function AppInner() {
       setSelfEmail(info.email ?? '');
     },
     onError: () => setError('Googleログインに失敗しました'),
-    scope: 'https://www.googleapis.com/auth/calendar.readonly',
+    scope: [
+      'https://www.googleapis.com/auth/calendar.readonly',
+      'https://www.googleapis.com/auth/contacts.readonly',
+      'https://www.googleapis.com/auth/gmail.compose',
+    ].join(' '),
   });
 
   function logout() {
@@ -105,7 +109,7 @@ function AppInner() {
       <Header userEmail={selfEmail} onLogout={logout} />
       <main className="max-w-4xl mx-auto px-6 py-8">
         <div className="bg-white rounded-2xl border border-gray-200 p-6 mb-6 space-y-6">
-          <UserSelector users={users} onChange={setUsers} selfEmail={selfEmail} />
+          <UserSelector users={users} onChange={setUsers} selfEmail={selfEmail} accessToken={accessToken} />
           <DateRangePicker
             startDate={startDate}
             endDate={endDate}
@@ -128,6 +132,9 @@ function AppInner() {
           <ScheduleView
             slots={slots}
             nameMap={Object.fromEntries(users.map((u) => [u.email, u.name]))}
+            users={users}
+            selfEmail={selfEmail}
+            accessToken={accessToken}
             loading={loading}
           />
         )}
