@@ -132,7 +132,6 @@ function AppInner() {
           <ScheduleView
             slots={slots}
             nameMap={Object.fromEntries(users.map((u) => [u.email, u.name]))}
-            users={users}
             selfEmail={selfEmail}
             accessToken={accessToken}
             loading={loading}

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { FreeSlot, UserEntry } from '../types';
+import { FreeSlot } from '../types';
 import { FreeSlotCard } from './FreeSlotCard';
 import { format } from 'date-fns';
 import { ja } from 'date-fns/locale';
@@ -8,7 +8,6 @@ import { generateHtmlEmail, createGmailDraft } from '../utils/emailDraft';
 interface ScheduleViewProps {
   slots: FreeSlot[];
   nameMap: Record<string, string>;
-  users: UserEntry[];
   selfEmail: string;
   accessToken: string;
   loading: boolean;
@@ -18,7 +17,7 @@ function slotKey(slot: FreeSlot) {
   return slot.start.toISOString();
 }
 
-export function ScheduleView({ slots, nameMap, users, selfEmail, accessToken, loading }: ScheduleViewProps) {
+export function ScheduleView({ slots, nameMap, selfEmail, accessToken, loading }: ScheduleViewProps) {
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [toEmail, setToEmail] = useState('');
   const [subject, setSubject] = useState('【日程調整】ご面談のお願い');
@@ -122,18 +121,13 @@ export function ScheduleView({ slots, nameMap, users, selfEmail, accessToken, lo
           <div className="space-y-3">
             <div>
               <label className="block text-xs font-medium text-gray-600 mb-1">宛先</label>
-              <select
+              <input
+                type="email"
                 value={toEmail}
                 onChange={(e) => setToEmail(e.target.value)}
+                placeholder="送り先のメールアドレスを入力"
                 className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="">送る相手を選択...</option>
-                {users.map((u) => (
-                  <option key={u.id} value={u.email}>
-                    {u.name}（{u.email}）
-                  </option>
-                ))}
-              </select>
+              />
             </div>
 
             <div>
