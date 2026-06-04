@@ -13,6 +13,7 @@ const CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID ?? '';
 function AppInner() {
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [selfEmail, setSelfEmail] = useState('');
+  const [selfName, setSelfName] = useState('');
   const [users, setUsers] = useState<UserEntry[]>([]);
   const [startDate, setStartDate] = useState(format(new Date(), 'yyyy-MM-dd'));
   const [endDate, setEndDate] = useState(format(addDays(new Date(), 7), 'yyyy-MM-dd'));
@@ -29,6 +30,7 @@ function AppInner() {
       });
       const info = await res.json();
       setSelfEmail(info.email ?? '');
+      setSelfName(info.name ?? info.email ?? '');
     },
     onError: () => setError('Googleログインに失敗しました'),
     scope: [
@@ -41,6 +43,7 @@ function AppInner() {
   function logout() {
     setAccessToken(null);
     setSelfEmail('');
+    setSelfName('');
     setSlots([]);
     setSearched(false);
     setError('');
@@ -72,21 +75,21 @@ function AppInner() {
 
   if (!accessToken) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-10 max-w-md w-full text-center">
-          <div className="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
-            <svg className="w-9 h-9 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <div className="min-h-screen bg-gray-950 flex items-center justify-center">
+        <div className="bg-gray-900 rounded-2xl border border-gray-700 p-10 max-w-md w-full text-center">
+          <div className="w-16 h-16 bg-blue-900/50 rounded-2xl flex items-center justify-center mx-auto mb-6">
+            <svg className="w-9 h-9 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>
           </div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">空き時間チェッカー</h2>
-          <p className="text-gray-500 mb-8 text-sm leading-relaxed">
+          <h2 className="text-2xl font-bold text-gray-100 mb-2">空き時間チェッカー</h2>
+          <p className="text-gray-400 mb-8 text-sm leading-relaxed">
             Googleアカウントでログインして、<br />
             あなたと他のメンバーの空き時間を確認しましょう。
           </p>
           <button
             onClick={() => login()}
-            className="w-full flex items-center justify-center gap-3 px-6 py-3 border border-gray-300 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+            className="w-full flex items-center justify-center gap-3 px-6 py-3 bg-gray-800 border border-gray-600 rounded-xl text-sm font-medium text-gray-200 hover:bg-gray-700 transition-colors"
           >
             <svg className="w-5 h-5" viewBox="0 0 24 24">
               <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -96,8 +99,8 @@ function AppInner() {
             </svg>
             Googleでログイン
           </button>
-          <p className="mt-6 text-xs text-gray-400">
-            カレンダーの空き/予定情報のみ読み取ります
+          <p className="mt-6 text-xs text-gray-600">
+            カレンダー・コンタクト・Gmailの権限を使用します
           </p>
         </div>
       </div>
@@ -105,10 +108,10 @@ function AppInner() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-950">
       <Header userEmail={selfEmail} onLogout={logout} />
-      <main className="max-w-4xl mx-auto px-6 py-8">
-        <div className="bg-white rounded-2xl border border-gray-200 p-6 mb-6 space-y-6">
+      <main className="max-w-5xl mx-auto px-6 py-8">
+        <div className="bg-gray-900 rounded-2xl border border-gray-700 p-6 mb-6 space-y-6">
           <UserSelector users={users} onChange={setUsers} selfEmail={selfEmail} accessToken={accessToken} />
           <DateRangePicker
             startDate={startDate}
@@ -117,12 +120,12 @@ function AppInner() {
             onEndChange={setEndDate}
           />
           {error && (
-            <p className="text-red-500 text-sm bg-red-50 px-4 py-2.5 rounded-lg">{error}</p>
+            <p className="text-red-400 text-sm bg-red-900/30 border border-red-800 px-4 py-2.5 rounded-lg">{error}</p>
           )}
           <button
             onClick={search}
             disabled={loading || users.length === 0}
-            className="w-full py-3 bg-blue-600 text-white font-medium rounded-xl hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="w-full py-3 bg-blue-600 text-white font-medium rounded-xl hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
           >
             空き時間を検索
           </button>
@@ -133,6 +136,7 @@ function AppInner() {
             slots={slots}
             nameMap={Object.fromEntries(users.map((u) => [u.email, u.name]))}
             selfEmail={selfEmail}
+            selfName={selfName}
             accessToken={accessToken}
             loading={loading}
           />

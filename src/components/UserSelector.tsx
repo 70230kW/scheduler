@@ -54,7 +54,7 @@ export function UserSelector({ users, onChange, selfEmail, accessToken }: UserSe
 
   return (
     <div>
-      <label className="block text-sm font-medium text-gray-700 mb-2">
+      <label className="block text-sm font-medium text-gray-300 mb-2">
         チェックする相手
       </label>
       <div className="flex gap-2 mb-1">
@@ -66,7 +66,7 @@ export function UserSelector({ users, onChange, selfEmail, accessToken }: UserSe
             onBlur={handleEmailBlur}
             onKeyDown={(e) => e.key === 'Enter' && addUser()}
             placeholder="メールアドレス"
-            className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-3 py-2.5 bg-gray-900 border border-gray-600 text-gray-200 placeholder-gray-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
           {looking && (
             <span className="absolute right-3 top-1/2 -translate-y-1/2">
@@ -89,7 +89,7 @@ export function UserSelector({ users, onChange, selfEmail, accessToken }: UserSe
           追加
         </button>
       </div>
-      <p className="text-xs text-gray-400 mb-2">メアド入力後、Googleコンタクトに登録済みの場合は名前が自動補完されます</p>
+      <p className="text-xs text-gray-600 mb-2">メアド入力後、Googleコンタクトに登録済みの場合は名前が自動補完されます</p>
       {error && <p className="text-red-500 text-xs mb-2">{error}</p>}
       {users.length > 0 && (
         <div className="flex flex-wrap gap-2 mt-2">
